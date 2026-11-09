@@ -199,7 +199,7 @@ flowchart LR
 1. SCAN searches each given folder recursively for `.py` files. It skips files ignored by `.gitignore` and always skips `.venv`, `.mosaic` and `.git`.
 2. SCAN finds every code block between `#MosaicCode:start` and `#MosaicCode:end` and every test block between `#MosaicTest:start` and `#MosaicTest:end`. Markers may be indented.
 3. SCAN reports an error with the line number for an unmatched marker, mismatched marker kinds, or a block inside another block.
-4. SCAN reports an error when an uncomposed block does not hold exactly one stub: a function, method or class with a docstring, or a module-level instruction string.
+4. SCAN reports an error when an uncomposed block does not hold exactly one stub: a function, method or class definition whose body is a triple-quoted instruction string, or a module-level triple-quoted instruction string.
 5. SCAN reports an error when a test block's docstring has no `Behavior tested:` section or that section is empty.
 6. DIR reads `#DependsOn`, `#Calls`, `#CalledBy` and `#Tests` directly under an uncomposed block's start marker. A target is a bare name for the same file or `file.py::Qualified.name` for another file. A directive may list several targets separated by commas or be repeated.
 7. DIR reports a structure error with the line number for a malformed or unknown directive, a `#Tests` directive in a code block, or a target that cannot be found.
@@ -304,7 +304,7 @@ flowchart LR
 12. VALID rejects generated code that is not valid Python or that defines more than the one unit of its stub.
 13. VALID rejects a generated function or method whose kind, name, parameter names, parameter order, annotations or defaults differ in any way from the stub.
 14. VALID rejects a generated class whose name or bases differ from the stub, that defines any method other than `__init__`, or that defines `__init__` when an `__init__` method block exists.
-15. VALID counts the attempts. When the code is rejected, or the call times out or hits a network error, GEN tries again in a new session, up to 3 attempts in total (set in code). After that GEN returns a failure and the block is left unchanged.
+15. VALID counts the attempts. When the code is rejected, or the call times out or hits a network error, GEN tries again in a new session, up to 3 attempts in total (set in code). After a rejection, the new prompt also holds the rejected code and the reason it was rejected. After a timeout or network error, the new prompt is the original one. Either way, the user's stored answers are reused and the same questions are not asked again. After the last attempt GEN returns a failure and the block is left unchanged.
 
 | | |
 | --- | --- |
@@ -416,7 +416,7 @@ Data moves through Mosaic as plain objects: Block, Directives, ContextPayload, G
 
 **Block format in the file**
 - Code blocks start with `#MosaicCode:start` and end with `#MosaicCode:end`. Test blocks start with `#MosaicTest:start` and end with `#MosaicTest:end`. Markers are indented to match the code they enclose. A block inside another block is an error.
-- Each block holds exactly one stub, written as valid Python: a `def` or `async def` function or method with the instruction in its docstring, a class with the instruction in its docstring, or, at module level, a single triple-quoted string that holds the instruction.
+- Each block holds exactly one stub, written as valid Python: a `def` or `async def` function or method whose body is the instruction in a triple-quoted string, a class whose body is the instruction in a triple-quoted string, or, at module level, a single triple-quoted string that holds the instruction.
 - A test block holds exactly one function or class stub. Its docstring has a non-empty `Behavior tested:` section. Test blocks can be anywhere in the repo.
 - A class block comes first. Each method block follows it, indented, outside the class block's end marker. The class block may generate class attributes and an `__init__`, but no other methods. It generates no `__init__` when an `__init__` method block exists for that class.
 - Directives go directly under the start marker, one per line, written `#Directive: targets` with no closing `#`. A target is a bare name for the same file or `file.py::Qualified.name` for another file. A directive can list several targets separated by commas, or be repeated.
