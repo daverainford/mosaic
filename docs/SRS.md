@@ -86,7 +86,7 @@ flowchart LR
 | REQ-PARSE-SCAN-001 | Functional | The software shall search each given folder recursively for `.py` files. It shall skip files ignored by `.gitignore` and always skip `.venv`, `.mosaic` and `.git`. |
 | REQ-PARSE-SCAN-002 | Functional | The software shall find every code block between `#MosaicCode:start` and `#MosaicCode:end`, and every test block between `#MosaicTest:start` and `#MosaicTest:end`, including indented markers. |
 | REQ-PARSE-SCAN-003 | Functional | The software shall report an error with the line number for an unmatched marker, mismatched marker kinds, or a block inside another block. |
-| REQ-PARSE-SCAN-004 | Functional | The software shall report an error when an uncomposed block does not contain exactly one stub: a function, method or class definition whose body is a triple-quoted instruction string, or a module-level triple-quoted instruction string. |
+| REQ-PARSE-SCAN-004 | Functional | The software shall report an error when an uncomposed block does not contain exactly one stub: a function, method or class with a docstring, or a module-level instruction string. |
 | REQ-PARSE-SCAN-005 | Functional | The software shall report an error when a test block's docstring has no `Behavior tested:` section or that section is empty. |
 | REQ-PARSE-DIR-001 | Functional | The software shall read the `#DependsOn`, `#Calls`, `#CalledBy` and `#Tests` directives under an uncomposed block's start marker. Targets may be comma-separated or the directive repeated, and may be bare same-file names or `file.py::Qualified.name` names. |
 | REQ-PARSE-DIR-002 | Functional | The software shall report as a structure error a malformed or unknown directive, a `#Tests` directive in a code block, or a directive target that cannot be found. |
